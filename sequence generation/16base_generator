@@ -1,0 +1,44 @@
+"""
+16-Base DNA Sequence Generator
+
+Generates random 16-base DNA sequences with GC-rich bias.
+Output format: space-separated nucleotides (e.g., "A C G T ...")
+Output file: 16base_sequences.txt
+"""
+
+import random
+
+
+def generate_dna_sequence(length):
+    bases = ['A', 'T', 'G', 'C']
+    sequence = ''
+
+    # Initialize the sequence with a random base
+    sequence += random.choice(['G', 'C'])
+
+    # Favor GC pairs by adjusting probabilities
+    gc_adj_prob = 0.7  # Probability of choosing G or C next to each other
+    gc_non_adj_prob = 0.3  # Probability of choosing G or C with a different base next to it
+    at_prob = 0.5  # Probability of choosing A or T
+
+    for _ in range(length - 1):
+        if sequence[-1] in ['G', 'C']:
+            base = random.choices(bases, weights=[gc_adj_prob, 0, gc_adj_prob, 0])[0]
+        else:
+            base = random.choices(bases, weights=[0, gc_non_adj_prob, 0, at_prob])[0]
+        sequence += base
+
+    return sequence
+
+# Generate 100,000 DNA sequences
+num_sequences = 100000
+sequence_length = 16
+sequences = [generate_dna_sequence(sequence_length) for _ in range(num_sequences)]
+
+# Save sequences to a file (space-separated nucleotides)
+file_name = "16base_sequences.txt"
+with open(file_name, 'w') as file:
+    for seq in sequences:
+        file.write(' '.join(seq) + '\n')
+
+print(f"{num_sequences} DNA sequences saved to {file_name}.")
